@@ -82,7 +82,7 @@ class Oferta(models.Model):
 class Producto(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=1000)
-    imagen = models.ImageField()
+    imagen = models.ImageField(upload_to='imagenes/')
     cantidad = models.IntegerField()
     precio = models.DecimalField(max_digits=16, decimal_places=2)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
