@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import connection
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
@@ -30,6 +31,14 @@ class Categoria(models.Model):
         if self.supercategoria is not None:
             return '[{0}] {1}'.format(self.supercategoria.nombre, self.nombre)
         return self.nombre
+
+
+class Compra(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    factura = models.ForeignKey('Factura', on_delete=models.CASCADE)
+
+    class Meta:
+        managed = False
 
 
 class Factura(models.Model):
@@ -87,6 +96,42 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=16, decimal_places=2)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
 
+    def calificacion_general(self):
+        qs = Resenna.objects.filter(producto=self.id)
+        calificacion = 0
+
+        for tupla in qs:
+            calificacion += tupla.calificacion
+
+        if qs.count() > 0:
+            return calificacion / qs.count()
+        else:
+            return 0.0
+
+    def ventas_totales(self):
+        stringsql = '''SELECT sum(sumas.c) FROM (
+                       (
+                       SELECT sum(lfp.cantidad) AS c
+                       FROM baratico_producto p 
+                           INNER JOIN baratico_lineafacturaproducto lfp ON (p.id = lfp.producto_id)
+                       WHERE p.id = %s -- id de coca cola es 5
+                       )
+                       UNION
+                       (
+                       SELECT sum(lfo.cantidad * po.cantidad) as c
+                       FROM baratico_lineafacturaoferta lfo 
+                           INNER JOIN baratico_productooferta po ON (lfo.oferta_id = po.oferta_id AND 
+                                                                     po.producto_id = %s)
+                       )
+                       )sumas
+                       '''
+        cursor = connection.cursor()
+        cursor.execute(stringsql, [self.id, self.id])
+
+        row = cursor.fetchone()
+        return row
+
+
     def __str__(self):
         return self.nombre
 
@@ -99,6 +144,9 @@ class ProductoOferta(models.Model):
     class Meta:  # Metadatos sobre el modelo. En este caso se usan para hacer un unique key de varias columnas
         unique_together = (('oferta', 'producto'),)
 
+    def __str__(self):
+        return self.producto.nombre
+
 
 class Resenna(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -110,7 +158,13 @@ class Resenna(models.Model):
     class Meta:  # Metadatos sobre el modelo. En este caso se usan para hacer un unique key de varias columnas
         unique_together = (('usuario', 'producto'),)
 
+    def get_nombre_producto(self):
+        return self.producto.nombre
+
 
 class Usuario(models.Model):  # Clase modelo que extiende los datos del modelo de Usuario (User) de Django.
     nombre_usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     direccion = models.CharField(max_length=500)
+
+    def __str__(self):
+        return self.nombre_usuario.get_username()
