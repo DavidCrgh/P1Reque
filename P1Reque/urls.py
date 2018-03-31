@@ -16,22 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.views import login
-from django.urls import include
 
-from baratico import views
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls,name='admin'),
+    url(r'^admin/',admin.site.urls),
     url(r'^inicio/', login, {'template_name': 'baratico/inicio.html'}, name='inicio'),
     url(r'^$', login,{'template_name':'baratico/login.html'},name='login'),
-
 ]
-
-
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-# ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-#
-# urlpatterns += [
-#     path('baratico/', include('baratico.urls')),
-# ]
