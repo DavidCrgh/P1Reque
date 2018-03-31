@@ -1,0 +1,8 @@
+<h1>Resultados de Busqueda</h1>
+<ul>
+{% for producto in object_list %}
+    <li>{{ producto.nombre }} - {{ producto.descripcion }}</li>
+{% empty %}
+    <li>La busqueda no retornó resultados.</li>
+{% endfor %}
+</ul>

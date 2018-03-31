@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
 from .models import Categoria, Oferta, Producto, Resenna, ProductoOferta, Factura, LineaFacturaProducto,\
-    LineaFacturaOferta, Usuario, Compra
+    LineaFacturaOferta, Usuario
 
 # Register your models here.
 
@@ -65,15 +65,6 @@ class FacturaAdmin(admin.ModelAdmin):
     inlines = [LineaFacturaProductoInLine, LineaFacturaOfertaInLine]
 
 
-class CompraAdmin(admin.ModelAdmin):
-    def get_queryset(self, request):
-        return Compra.objects.raw('''
-        SELECT u.id AS usuario, f.id AS factura
-        FROM auth_user u INNER JOIN baratico_factura f ON (u.id = f.usuario_id)
-        ORDER BY f.fecha DESC
-        ''')
-
-
 admin.site.register(Categoria, CategoriaAdmin)
 admin.site.register(Producto, ProductoAdmin)
 admin.site.register(Oferta, OfertaAdmin)
@@ -81,4 +72,3 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 admin.site.register(Resenna)
 admin.site.register(Factura, FacturaAdmin)
-admin.site.register(Compra, CompraAdmin)

@@ -33,14 +33,6 @@ class Categoria(models.Model):
         return self.nombre
 
 
-class Compra(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    factura = models.ForeignKey('Factura', on_delete=models.CASCADE)
-
-    class Meta:
-        managed = False
-
-
 class Factura(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)  # auto_now_add: Guarda la fecha actual automaticamente
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
