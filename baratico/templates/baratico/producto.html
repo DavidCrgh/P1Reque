@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
@@ -5,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
-  <link rel="stylesheet" href="theme.css" type="text/css"> </head>
+  <link rel="stylesheet" href="{% static 'baratico/inicio.css' %}" type="text/css"> </head>
 
 <body>
   <nav class="navbar navbar-expand-md navbar-dark bg-primary">
@@ -31,26 +32,26 @@
               <br> </a>
           </li>
         </ul>
-        <form class="form-inline m-0">
-          <input class="form-control mr-2" type="text" placeholder="search">
-          <button class="btn btn-secondary" type="submit">Buscar
-            <br> </button>
+        <form class="form-inline m-0" action="{% url 'baratico:resultados-busqueda' %}" method="get">
+            {% csrf_token %}
+            <input class="form-control mr-2" type="text" placeholder="Buscar productos" name="barraBusqueda">
+            <button class="btn btn-secondary" type="submit">Buscar <br> </button>
         </form>
       </div>
       <a class="navbar-brand" href="#">&nbsp; &nbsp; &nbsp; &nbsp;
-        <img src="../../../OneDrive para la Empresa/shopping-cart-blue-300px.png" class="d-inline-block align-top mx-auto" alt="" width="50"> </a>
+        <img src="{% static 'images/carrito.png' %}" class="d-inline-block align-top mx-auto" alt="" width="50"> </a>
     </div>
   </nav>
   <div class="p-3">
     <div class="container">
       <div class="row">
         <div class="col-md-5 order-2 order-md-1">
-          <img class="img-fluid d-block bg-light mx-auto img-thumbnail" src="../../../OneDrive para la Empresa/atun.png"> </div>
+          <img class="img-fluid d-block bg-light mx-auto img-thumbnail" src="/media/{{ producto.imagen }}"> </div>
         <div class="col-md-6 order-1 order-md-2 offset-md-1">
-          <h3>Descripción del producto</h3>
+          <h3>{{ producto.nombre }}</h3>
           <ul class="">
-            <li class="py-2">Nombre:</li>
-            <li>Precio unitario:</li>
+            <li class="py-2">{{ producto.descripcion }}</li>
+            <li>Precio unitario: ₡ {{ producto.precio }}</li>
           </ul>
           <div class="row">
             <div class="col-md-12">
@@ -63,7 +64,7 @@
               <ul class="">
                 <li class="m-0 p-2">Cantidad:&nbsp;
                   <br> </li>
-                <input class="form-control mr-2 w-25" placeholder="0" min="0" type="number" max="5">
+                <input class="form-control mr-2 w-25" placeholder="1" min="1" type="number" max="{{ producto.cantidad }}">
                 <button class="btn btn-secondary border align-items-center btn-sm my-2 text-center" type="submit">Añadir al carrito&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
                   <br> </button>
               </ul>
@@ -77,33 +78,36 @@
     <div class="container">
       <div class="row py-2">
         <div class="col-md-4">
-          <h5 class="text-primary">Añadir reseña sobre el producto:
+          <h5 class="text-primary">Añadir reseña sobre el producto
             <br> </h5>
         </div>
-        <div class="col-md-6">
-          <div class="row">
-            <div class="col-md-3">
-              <h5 class="my-2">Comentarios:
-                <br> </h5>
-            </div>
-            <div class="col-md-8 text-left">
-              <input class="form-control mr-2 my-4" type="text"> </div>
+          <div class="col-md-6">
+              <div class="row">
+                  <div class="col-md-3">
+                      <h5 class="my-2">Comentario:
+                          <br>
+                      </h5>
+
+                  </div>
+                  <div class="col-md-8 text-left">
+                      <input class="form-control mr-2 my-4" type="text"> </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-3">
+                      <h5 class="justify-content-start p-1">Puntuación:
+                          <br>
+                      </h5>
+                  </div>
+                  <div class="col-md-4">
+                      <input class="form-control mr-2" min="1" type="number" max="10">
+                  </div>
+                  <div class="col-md-4">
+                      <a href="#" class="btn justify-content-center align-items-end align-self-end btn-outline-secondary">Guardar
+                          <br>
+                      </a>
+                  </div>
+              </div>
           </div>
-          <div class="row">
-            <div class="col-md-3">
-              <h5 class="justify-content-start p-1">Puntuación:
-                <br> </h5>
-            </div>
-            <div class="col-md-4">
-              <input class="form-control mr-2" min="0" type="number" max="5">
-            </div>
-            <div class="col-md-4">
-              <a href="#" class="btn justify-content-center align-items-end align-self-end btn-outline-secondary">Guardar
-                <br>
-              </a>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>

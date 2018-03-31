@@ -2,8 +2,12 @@ from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.shortcuts import render, render_to_response
 from django.views import generic
 
-from baratico.models import Producto
+from baratico.models import Producto, Resenna
 
+
+class DetalleProducto(generic.DetailView):
+    model = Producto
+    template_name = 'baratico/producto.html'
 
 class ResultadosBusquedaList(generic.ListView):
     model = Producto
