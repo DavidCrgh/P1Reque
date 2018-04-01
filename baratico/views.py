@@ -1,9 +1,10 @@
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.shortcuts import render, render_to_response
 from django.views import generic
+from django.db import connection
 from django.http import HttpResponseRedirect
 
-from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta
+from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta, Usuario
 
 
 class DetalleProducto(generic.DetailView):
@@ -33,6 +34,7 @@ class CarritoList(generic.ListView):
     template_name = 'baratico/carrito.html'
     # context_object_name = 'carrito_producto_list'
 
+
     def get_queryset(self):
         usuario_actual = self.request.user
         return CarritoProducto.objects.filter(usuario=usuario_actual)
@@ -40,8 +42,12 @@ class CarritoList(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(CarritoList, self).get_context_data(**kwargs)
         usuario_actual = self.request.user
-        context['carrito_producto_list'] = CarritoProducto.objects.filter(usuario=usuario_actual)
-        context['carrito_oferta_list'] = CarritoOferta.objects.filter(usuario=usuario_actual)
+        cp = CarritoProducto.objects.filter(usuario=usuario_actual)
+        co = CarritoOferta.objects.filter(usuario=usuario_actual)
+        total = Usuario.objects.get(nombre_usuario=usuario_actual).get_total_productos()
+        context['carrito_producto_list'] = cp
+        context['carrito_oferta_list'] = co
+        context['total'] = total
         return context
 
 

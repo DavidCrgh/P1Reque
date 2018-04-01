@@ -123,7 +123,6 @@ class Producto(models.Model):
         row = cursor.fetchone()
         return row
 
-
     def __str__(self):
         return self.nombre
 
@@ -157,6 +156,23 @@ class Resenna(models.Model):
 class Usuario(models.Model):  # Clase modelo que extiende los datos del modelo de Usuario (User) de Django.
     nombre_usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     direccion = models.CharField(max_length=500)
+
+    def get_total_productos(self):
+        id_user = self.nombre_usuario.id
+        stringsql = '''SELECT SUM(cp.cantidad * p.precio)
+                       FROM baratico_carritoproducto cp
+                       INNER JOIN baratico_producto p ON cp.producto_id = p.id
+                       WHERE cp.usuario_id = %s
+                       '''
+        cursor = connection.cursor()
+        cursor.execute(stringsql, [id_user])
+
+        row = cursor.fetchone()
+
+        if row[0]:
+            return row[0].real
+        else:
+            return 0
 
     def __str__(self):
         return self.nombre_usuario.get_username()
