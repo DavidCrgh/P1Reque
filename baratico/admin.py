@@ -40,7 +40,10 @@ class ProductoAdmin(admin.ModelAdmin):
 
 
 class ResennaAdmin(admin.ModelAdmin):
-    list_display = ['']
+    actions = None
+    list_display = ['usuario','comentario','calificacion','fecha']
+    fields = ['usuario','calificacion','comentario']
+    readonly_fields = ['usuario','calificacion']
 
 
 class UsuarioInLine(admin.StackedInline):
@@ -70,5 +73,5 @@ admin.site.register(Producto, ProductoAdmin)
 admin.site.register(Oferta, OfertaAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-admin.site.register(Resenna)
+admin.site.register(Resenna,ResennaAdmin)
 admin.site.register(Factura, FacturaAdmin)

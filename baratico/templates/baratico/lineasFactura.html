@@ -26,7 +26,7 @@
           </li>
            <li class="nav-item">
               <a class="nav-link" href="{% url 'baratico:comprasResultado' %}"> Compras</a>
-          </li>
+           </li>
           <li class="nav-item">
             <a class="nav-link" href="#"><i class="fa fa-user fa-fw d-inline-block pull-right"></i>Chat
               <br> </a>
@@ -46,41 +46,95 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h1 class="">Resultados de Busqueda</h1>
+          <h1 class="">Detalle de Factura</h1>
         </div>
       </div>
     </div>
   </div>
-  {% for producto in object_list %}
-      <div class="py-5" style="border:0.3px grey">
-          <div class="container">
-              <div class="row">
-                  <div class="col-md-3">
-                      <img src = "/media/{{ producto.imagen }}" class="img-fluid d-block bg-light mx-auto img-thumbnail"> </div>
-                  <div class="col-md-9">
-                      <div class="card">
-                          <div class="card-header"><a href="{% url 'baratico:detalle_producto' producto.id %}"> {{ producto.nombre }} </a>  </div>
-                          <div class="card-body">
-                              <h4>Precio:</h4>
-                              <p> ₡ {{ producto.precio }} </p>
-                          </div>
-                      </div>
-                  </div>
-              </div>
+  <div class="py-2">
+    <div class="container">
+      <h3 class="">Productos  de la factura</h3>
+    </div>
+  </div>
+  {% for lineaProducto in factura.lineafacturaproducto_set.all %}
+  <div class="py-1" style="border:0.3px grey">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <img src="/media/{{ lineaProducto.producto.imagen }}" class="img-fluid d-block bg-light mx-auto img-thumbnail"> </div>
+        <div class="col-md-9">
+          <div class="card">
+            <div class="card-header">
+              <a href="{% url 'baratico:detalle_producto' lineaProducto.producto.id %}"> {{ lineaProducto.producto.nombre }} </a>
+            </div>
+            <div class="card-body">
+              <h4>Precio: ₡ {{ lineaProducto.producto.precio }}</h4>
+              <h4>Cantidad: {{ lineaProducto.cantidad }}</h4>
+            </div>
           </div>
+        </div>
       </div>
+    </div>
+  </div>
   {% empty %}
-      <div class="py-5" style="border:0.3px grey">
-          <div class="container">
-              <div class="row">
-                  <h3>La busqueda no retornó resultados.</h3>
-              </div>
-          </div>
+  <div class="py-3" style="border:0.3px grey">
+    <div class="container">
+      <div class="row">
+        <h3>No tiene productos agregados.</h3>
       </div>
+    </div>
+  </div>
   {% endfor %}
+  <div class="py-3">
+    <div class="container">
+      <h3 class="">Ofertas  de la factura</h3>
+    </div>
+  </div>
+  {% for lineaOferta in factura.lineafacturaoferta_set.all %}
+  <div class="py-1" style="border:0.3px grey">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <a href="{% url 'baratico:detalle_producto' lineaOferta.oferta.id   %}"> {{  lineaOferta.oferta.id }} </a>
+            </div>
+            <div class="card-body">
+              <h4>Precio: ₡ {{ lineaOferta.precio }}</h4>
+              <h4>Cantidad: {{ lineaOferta.cantidad }}</h4>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  </div>
+  {% empty %}
+  <div  style="border:0.3px grey">
+    <div class="container">
+      <div class="row">
+        <h3>No tiene ofertas agregadas.</h3>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 p-0">
+          <p class="lead">Cantidad de productos: &nbsp;</p>
+          <p class="lead">Total a pagar:&nbsp;</p>
+          <a class="btn btn-secondary" href="#">PAGAR CARRITO
+            <br> </a>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <pingendo onclick="window.open('https://pingendo.com/', '_blank')" style="cursor:pointer;position: fixed;bottom: 10px;right:10px;padding:4px;background-color: #00b0eb;border-radius: 8px; width:180px;display:flex;flex-direction:row;align-items:center;justify-content:center;font-size:14px;color:white">Made with Pingendo&nbsp;&nbsp;
+    <img src="https://pingendo.com/site-assets/Pingendo_logo_big.png" class="d-block" alt="Pingendo logo" height="16">
+  </pingendo>
 </body>
 
 </html>

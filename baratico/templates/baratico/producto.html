@@ -24,8 +24,8 @@
             <a class="nav-link" href="#">Categorias
               <br> </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Compras</a>
+           <li class="nav-item">
+              <a class="nav-link" href="{% url 'baratico:comprasResultado' %}"> Compras</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#"><i class="fa fa-user fa-fw d-inline-block pull-right"></i>Chat
@@ -48,10 +48,10 @@
         <div class="col-md-5 order-2 order-md-1">
           <img class="img-fluid d-block bg-light mx-auto img-thumbnail" src="/media/{{ producto.imagen }}"> </div>
         <div class="col-md-6 order-1 order-md-2 offset-md-1">
-          <h3>{{ producto.nombre }}</h3>
+          <h3>{{ producto.nombre }} </h3>
           <ul class="">
-            <li class="py-2">{{ producto.descripcion }}</li>
-            <li>Precio unitario: ₡ {{ producto.precio }}</li>
+            <li class="py-2">{{ producto.descripcion }} </li>
+            <li>Precio unitario: ₡ {{ producto.precio }} </li>
           </ul>
           <div class="row">
             <div class="col-md-12">
@@ -85,41 +85,54 @@
             <br> </h5>
         </div>
           <div class="col-md-6">
-              <div class="row">
-                  <div class="col-md-3">
-                      <h5 class="my-2">Comentario:
-                          <br>
-                      </h5>
-
+              <form class="form-inline m-0" action="{% url 'baratico:comentario' producto.id %}" method="post">
+                   {% csrf_token %}
+                  <div class="row">
+                      <div class="col-md-3">
+                          <h5 class="my-2">Comentario:
+                              <br>
+                          </h5>
+                      </div>
+                      <div class="col-md-8 text-left">
+                          <input class="form-control mr-2 my-4" type="text" name="comentario"> </div>
                   </div>
-                  <div class="col-md-8 text-left">
-                      <input class="form-control mr-2 my-4" type="text"> </div>
-              </div>
-              <div class="row">
-                  <div class="col-md-3">
-                      <h5 class="justify-content-start p-1">Puntuación:
-                          <br>
-                      </h5>
+                  <div class="row">
+                      <div class="col-md-3">
+                          <h5 class="justify-content-start p-1">Puntuación:
+                              <br>
+                          </h5>
+                      </div>
+                      <div class="col-md-4">
+                          <input class="form-control mr-2" min="1" type="number" max="10" name="puntuacion">
+                      </div>
+                      <div class="col-md-4">
+                         <button class="btn btn-secondary border align-items-center btn-sm my-2 text-center" type="submit">Comentar&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
+                  <br> </button>
+                      </div>
                   </div>
-                  <div class="col-md-4">
-                      <input class="form-control mr-2" min="1" type="number" max="10">
-                  </div>
-                  <div class="col-md-4">
-                      <a href="#" class="btn justify-content-center align-items-end align-self-end btn-outline-secondary">Guardar
-                          <br>
-                      </a>
-                  </div>
-              </div>
+              </form>
           </div>
       </div>
     </div>
-  </div>
+      </div>
+    <div class="py-3" style="border:0.3px red">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-12 border d-flex">
+              <h1 class="text-secondary text-left text-capitalize">Comentarios</h1>
+              <ul class="">
+                  {% for comentario in producto.resenna_set.all %}
+                <li  class="py-1 text-primary">{{ comentario.usuario.username }}: {{ comentario.comentario }} </li>
+                  {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  <pingendo onclick="window.open('https://pingendo.com/', '_blank')" style="cursor:pointer;position: fixed;bottom: 10px;right:10px;padding:4px;background-color: #00b0eb;border-radius: 8px; width:180px;display:flex;flex-direction:row;align-items:center;justify-content:center;font-size:14px;color:white">Made with Pingendo&nbsp;&nbsp;
-    <img src="https://pingendo.com/site-assets/Pingendo_logo_big.png" class="d-block" alt="Pingendo logo" height="16">
-  </pingendo>
+
 </body>
 
 </html>

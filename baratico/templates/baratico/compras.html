@@ -24,7 +24,7 @@
             <a class="nav-link" href="#">Categorias
               <br> </a>
           </li>
-           <li class="nav-item">
+          <li class="nav-item">
               <a class="nav-link" href="{% url 'baratico:comprasResultado' %}"> Compras</a>
           </li>
           <li class="nav-item">
@@ -38,11 +38,11 @@
             <br> </button>
         </form>
       </div>
-      <a href="{% url 'baratico:ver_carrito' %}" class="navbar-brand">&nbsp; &nbsp; &nbsp; &nbsp;
-        <img src="{% static 'images/carrito.png' %}" class="d-inline-block align-top mx-auto" alt="" width="50"> </a>
+      <a class="navbar-brand" href="{% url 'baratico:ver_carrito' %}">&nbsp; &nbsp; &nbsp; &nbsp;
+          <img src="{% static 'images/carrito.png' %}" class="d-inline-block align-top mx-auto" alt="" width="50"> </a>
     </div>
   </nav>
-  <div class="py-5">
+  <div class="py-4">
     <div class="container">
       <div class="row">
         <div class="col-md-12">
@@ -51,18 +51,17 @@
       </div>
     </div>
   </div>
-  {% for producto in object_list %}
-      <div class="py-5" style="border:0.3px grey">
+  {% for factura in object_list %}
+      <div class="py-2" style="border:0.3px grey">
           <div class="container">
               <div class="row">
-                  <div class="col-md-3">
-                      <img src = "/media/{{ producto.imagen }}" class="img-fluid d-block bg-light mx-auto img-thumbnail"> </div>
-                  <div class="col-md-9">
+                  <div class="col-md-1">
+                      <img src="{% static 'images/factura.png' %}" class="img-fluid d-block bg-secondary mx-1 img-thumbnail"> </div>
+                  <div class="col-md-6">
                       <div class="card">
-                          <div class="card-header"><a href="{% url 'baratico:detalle_producto' producto.id %}"> {{ producto.nombre }} </a>  </div>
+                          <div class="card-header"><a href="{% url 'baratico:detalleFactura' factura.id %}"> Número de factura: {{ factura.id }} </a>  </div>
                           <div class="card-body">
-                              <h4>Precio:</h4>
-                              <p> ₡ {{ producto.precio }} </p>
+                              <p> Fecha de la factura: {{ factura.fecha }} </p>
                           </div>
                       </div>
                   </div>
@@ -73,7 +72,7 @@
       <div class="py-5" style="border:0.3px grey">
           <div class="container">
               <div class="row">
-                  <h3>La busqueda no retornó resultados.</h3>
+                  <h3> No tiene compras realizadas </h3>
               </div>
           </div>
       </div>

@@ -144,7 +144,7 @@ class Resenna(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     calificacion = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)])
-    comentario = models.CharField(max_length=1000)
+    comentario = models.CharField(max_length=1000,blank=True)
     fecha = models.DateField(auto_now_add=True)  # auto_now_add: Guarda la fecha actual automaticamente
 
     class Meta:  # Metadatos sobre el modelo. En este caso se usan para hacer un unique key de varias columnas

@@ -1,9 +1,11 @@
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.core.checks import messages
 from django.shortcuts import render, render_to_response
 from django.views import generic
 from django.http import HttpResponseRedirect
 
 from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta
+from baratico.models import Producto, Resenna, Factura
 
 
 class DetalleProducto(generic.DetailView):
@@ -11,10 +13,16 @@ class DetalleProducto(generic.DetailView):
     template_name = 'baratico/producto.html'
 
 
+class DetalleFactura(generic.DetailView):
+    model = Factura
+    template_name = 'baratico/lineasFactura.html'
+
+
+
 class ResultadosBusquedaList(generic.ListView):
     model = Producto
     paginate_by = 10
-    template_name = 'baratico/resultadosBusqueda.html'
+    template_name = 'baratico/resultadosBusqueda.html'  # TODO crear html para resultados de busqueda
 
     def get_queryset(self):
         qs = Producto.objects.all()
@@ -23,6 +31,25 @@ class ResultadosBusquedaList(generic.ListView):
         if keywords:
             consulta = SearchQuery(keywords)
             vector = SearchVector('nombre', 'descripcion')
+            qs = qs.annotate(search=vector).filter(search=consulta)
+            qs = qs.annotate(rank=SearchRank(vector, consulta)).order_by('-rank')
+
+        return qs
+
+
+
+class ComprasList(generic.ListView):
+    model = Factura
+    paginate_by = 10
+    template_name = 'baratico/compras.html'  # TODO crear html para resultados de busqueda
+
+    def get_queryset(self):
+        qs = Factura.objects.all()
+
+        keywords = self.request.GET.get(self.request.user)
+        if keywords:
+            consulta = SearchQuery(keywords)
+            vector = SearchVector('fecha', 'usuario')
             qs = qs.annotate(search=vector).filter(search=consulta)
             qs = qs.annotate(rank=SearchRank(vector, consulta)).order_by('-rank')
 
@@ -46,7 +73,30 @@ class CarritoList(generic.ListView):
 
 
 def login(request):
-    return render(request, 'baratico/login.html', {})
+    return render(request, 'baratico/chat.html', {})
+
+
+def CalificarProducto(request,id_producto):
+    if request.method=='POST':
+        pUsuario=request.user
+        producto=Producto.objects.get(pk=id_producto)
+        calificacion= request.POST.get('puntuacion')
+        comentario=request.POST.get('comentario')
+        fecha= datetime.now()
+        resena_obj=Resenna(usuario=pUsuario,producto=producto,calificacion=calificacion,comentario=comentario,fecha=fecha)
+        try:
+            resena_obj.save()
+        except:
+            resena_obj=Resenna.objects.get(usuario=pUsuario,producto=producto)
+            resena_obj.comentario=comentario
+            resena_obj.calificacion=calificacion
+            resena_obj.save()
+
+
+    return render(request,'baratico/inicio.html',{})
+
+
+
 
 
 def agregar_producto_carrito(request, id_producto):
