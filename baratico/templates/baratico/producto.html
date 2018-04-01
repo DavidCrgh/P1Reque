@@ -38,7 +38,7 @@
             <button class="btn btn-secondary" type="submit">Buscar <br> </button>
         </form>
       </div>
-      <a class="navbar-brand" href="#">&nbsp; &nbsp; &nbsp; &nbsp;
+      <a href="{% url 'baratico:ver_carrito' %}" class="navbar-brand">&nbsp; &nbsp; &nbsp; &nbsp;
         <img src="{% static 'images/carrito.png' %}" class="d-inline-block align-top mx-auto" alt="" width="50"> </a>
     </div>
   </nav>
@@ -59,17 +59,20 @@
                 <br> </p>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-12">
-              <ul class="">
-                <li class="m-0 p-2">Cantidad:&nbsp;
-                  <br> </li>
-                <input class="form-control mr-2 w-25" placeholder="1" min="1" type="number" max="{{ producto.cantidad }}">
-                <button class="btn btn-secondary border align-items-center btn-sm my-2 text-center" type="submit">Añadir al carrito&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
-                  <br> </button>
-              </ul>
-            </div>
-          </div>
+            <form action="{% url 'baratico:anadir_producto_carrito' producto.id %}" method="post">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="">
+                            <li class="m-0 p-2">Cantidad:&nbsp;<br>
+                            </li>
+                            {% csrf_token %}
+                            <input name="cantidadCarrito" class="form-control mr-2 w-25" placeholder="1" min="1" type="number" max="{{ producto.cantidad }}">
+                            <button class="btn btn-secondary border align-items-center btn-sm my-2 text-center" type="submit">Añadir al carrito&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<br>
+                            </button>
+                        </ul>
+                    </div>
+                </div>
+            </form>
         </div>
       </div>
     </div>

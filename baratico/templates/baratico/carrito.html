@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
@@ -5,9 +6,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
-  <link rel="stylesheet" href="theme.css" type="text/css"> </head>
+  <link rel="stylesheet" href="{% static 'baratico/inicio.css' %}" type="text/css"> </head>
 
-<body class="bg-light">
+<body>
   <nav class="navbar navbar-expand-md navbar-dark bg-primary">
     <div class="container">
       <a class="navbar-brand" href="#">Inicio
@@ -31,97 +32,106 @@
               <br> </a>
           </li>
         </ul>
-        <form class="form-inline m-0">
-          <input class="form-control mr-2" type="text" placeholder="search">
+        <form class="form-inline m-0" action="{% url 'baratico:resultados-busqueda' %}" method="get">
+          <input class="form-control mr-2" type="text" placeholder="Buscar productos" name="barraBusqueda">
           <button class="btn btn-secondary" type="submit">Buscar
             <br> </button>
         </form>
       </div>
-      <a class="navbar-brand" href="#">&nbsp; &nbsp; &nbsp; &nbsp;
-        <img src="../../../OneDrive para la Empresa/shopping-cart-blue-300px.png" class="d-inline-block align-top mx-auto" alt="" width="50"> </a>
+      <a href="{% url 'baratico:ver_carrito' %}" class="navbar-brand">&nbsp; &nbsp; &nbsp; &nbsp;
+        <img src="{% static 'images/carrito.png' %}" class="d-inline-block align-top mx-auto" alt="" width="50"> </a>
     </div>
   </nav>
-  <div class="">
+  <div class="py-5">
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h1 class="py-3">Carrito de compras
-            <br>
-          </h1>
-        </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row bg-secondary text-white text-center text-uppercase border border-dark">
-        <div class="col-md-3">
-          <p class="lead text-center">Producto</p>
-        </div>
-        <div class="col-md-3">
-          <p class="lead text-center">Descripción</p>
-        </div>
-        <div class="col-md-3">
-          <p class="lead text-center">Cantidad
-            <br>
-          </p>
-        </div>
-        <div class="col-md-3">
-          <p class="lead text-center">Monto</p>
-        </div>
-      </div>
-      <div class="row border-dark border">
-        <div class="col-md-3">
-          <img class="d-block img-fluid m-0 p-0 mx-auto" src="../../../OneDrive para la Empresa/atun.png" width="100">
-        </div>
-        <div class="col-md-3 text-left py-2">
-          <ul class="">
-            <li class="">Nombre:</li>
-            <li>Precio:</li>
-          </ul>
-        </div>
-        <div class="col-md-3">
-          <li>1</li>
-        </div>
-        <div class="col-md-3">
-          <li>₡670</li>
-        </div>
-      </div>
-      <div class="row border border-dark">
-        <div class="col-md-3">
-          <img class="d-block img-fluid m-0 p-0 mx-auto" src="../../../OneDrive para la Empresa/medias.png" width="100">
-        </div>
-        <div class="col-md-3 text-left py-2">
-          <ul class="">
-            <li class="">Nombre:</li>
-            <li>Precio:</li>
-          </ul>
-        </div>
-        <div class="col-md-3">
-          <li>1</li>
-        </div>
-        <div class="col-md-3">
-          <li>₡1000
-            <br>
-          </li>
-        </div>
-      </div>
-    </div>
-    <div class="container my-3 p-0">
-      <div class="row">
-        <div class="col-md-4">
-          <p class="lead">Quitar del carrito:
-            <br>
-          </p>
-        </div>
-        <div class="col-md-4">
-          <input class="form-control mr-2" type="text" placeholder="ID">
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-secondary text-center" type="submit">Quitar &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-            <br> </button>
+          <h1 class="">Carrito de Compra</h1>
         </div>
       </div>
     </div>
   </div>
+  <div class="py-2">
+    <div class="container">
+      <h3 class="">Productos en Carrito</h3>
+    </div>
+  </div>
+  {% for producto in carrito_producto_list %}
+  <div class="py-1" style="border:0.3px grey">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <img src="/media/{{ producto.producto.imagen }}" class="img-fluid d-block bg-light mx-auto img-thumbnail"> </div>
+        <div class="col-md-9">
+          <div class="card">
+            <div class="card-header">
+              <a href="{% url 'baratico:detalle_producto' producto.producto.id %}"> {{ producto.producto.nombre }} </a>
+            </div>
+            <div class="card-body">
+              <h4>Precio: ₡ {{ producto.producto.precio }}</h4>
+              <h4>Cantidad: {{ producto.cantidad }}</h4>
+              <form action="{% url 'baratico:eliminar_producto_carrito' producto.producto.id %}" method="post">
+                  {% csrf_token %}
+                <button class="btn btn-secondary border align-items-center btn-sm my-2 text-center" type="submit">Borrar&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
+                  <br>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="py-3" style="border:0.3px grey">
+    <div class="container">
+      <div class="row">
+        <h3>No tiene productos agregados.</h3>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="py-2">
+    <div class="container">
+      <h3 class="">Ofertas en Carrito</h3>
+    </div>
+  </div>
+  {% for oferta in carrito_oferta_list %}
+  <div class="py-1" style="border:0.3px grey">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <h3>OFERTA</h3>
+        <div class="col-md-9">
+          <div class="card">
+            <div class="card-header">
+              <a href="{% url 'baratico:detalle_producto' oferta.oferta.id %}"> {{  oferta.oferta.nombre }} </a>
+            </div>
+            <div class="card-body">
+              <h4>Precio: ₡ {{ oferta.oferta.precio }}</h4>
+              <h4>Cantidad: {{ oferta.cantidad }}</h4>
+              <form>
+                  {% csrf_token %}
+                <button class="btn btn-secondary border align-items-center btn-sm my-2 text-center" type="submit">Borrar&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
+                  <br>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  {% empty %}
+  <div class="py-3" style="border:0.3px grey">
+    <div class="container">
+      <div class="row">
+        <h3>No tiene ofertas agregadas.</h3>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
   <div class="py-0">
     <div class="container">
       <div class="row">
@@ -129,8 +139,7 @@
           <p class="lead">Cantidad de productos: &nbsp;</p>
           <p class="lead">Total a pagar:&nbsp;</p>
           <a class="btn btn-secondary" href="#">PAGAR CARRITO
-            <br>
-          </a>
+            <br> </a>
         </div>
       </div>
     </div>

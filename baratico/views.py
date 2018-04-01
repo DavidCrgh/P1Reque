@@ -1,18 +1,20 @@
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.shortcuts import render, render_to_response
 from django.views import generic
+from django.http import HttpResponseRedirect
 
-from baratico.models import Producto, Resenna
+from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta
 
 
 class DetalleProducto(generic.DetailView):
     model = Producto
     template_name = 'baratico/producto.html'
 
+
 class ResultadosBusquedaList(generic.ListView):
     model = Producto
     paginate_by = 10
-    template_name = 'baratico/resultadosBusqueda.html'  # TODO crear html para resultados de busqueda
+    template_name = 'baratico/resultadosBusqueda.html'
 
     def get_queryset(self):
         qs = Producto.objects.all()
@@ -27,5 +29,42 @@ class ResultadosBusquedaList(generic.ListView):
         return qs
 
 
+class CarritoList(generic.ListView):
+    template_name = 'baratico/carrito.html'
+    # context_object_name = 'carrito_producto_list'
+
+    def get_queryset(self):
+        usuario_actual = self.request.user
+        return CarritoProducto.objects.filter(usuario=usuario_actual)
+
+    def get_context_data(self, **kwargs):
+        context = super(CarritoList, self).get_context_data(**kwargs)
+        usuario_actual = self.request.user
+        context['carrito_producto_list'] = CarritoProducto.objects.filter(usuario=usuario_actual)
+        context['carrito_oferta_list'] = CarritoOferta.objects.filter(usuario=usuario_actual)
+        return context
+
+
 def login(request):
     return render(request, 'baratico/login.html', {})
+
+
+def agregar_producto_carrito(request, id_producto):
+    if request.user.is_authenticated:
+        cantidad = request.POST.get('cantidadCarrito')
+        producto = Producto.objects.get(pk=id_producto)
+        usuario_actual = request.user
+        cp = CarritoProducto(cantidad=cantidad, producto=producto, usuario=usuario_actual)
+        cp.save()
+        print("Cantidad: ", cantidad)
+        print("Producto: ", producto.nombre)
+        print("Usuario: ", usuario_actual.username)
+        print("CarritoProducto agregado")
+
+    return render(request, 'baratico/inicio.html', {})
+
+
+def eliminar_producto_carrito(request, id_producto):
+    usuario_actual = request.user
+    CarritoProducto.objects.filter(usuario=usuario_actual, producto=id_producto).delete()
+    return render(request, 'baratico/inicio.html', {})
