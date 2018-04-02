@@ -20,10 +20,10 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     path('baratico/', include('baratico.urls')),
     url(r'^admin/',admin.site.urls),
-    url(r'^registrar/', login, {'template_name': 'baratico/registerUser.html'}, name='registrar'),
     url(r'^inicio/',login,{'template_name': 'baratico/inicio.html'}, name='inicio'),
     url(r'^$', login, {'template_name': 'baratico/login.html'}, name='login'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

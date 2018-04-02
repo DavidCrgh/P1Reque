@@ -2,11 +2,12 @@ from django.urls import path
 from django.conf.urls import url
 from django.contrib.auth.views import login
 
+from baratico.views import RegistrarUsuario
 from . import views
 
 app_name = 'baratico'
 urlpatterns = [
-    url(r'^login$', views.login),
+    url(r'^registrar/',RegistrarUsuario.as_view(),name='registrar'),
     path('resultados/', views.ResultadosBusquedaList.as_view(), name='resultados-busqueda'),
     path('compras/', views.ComprasList.as_view(), name='comprasResultado'),
     path('<int:id_producto>/comentar', views.CalificarProducto, name='comentario'),

@@ -1,12 +1,38 @@
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.core.checks import messages
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.utils.datetime_safe import datetime
 from django.views import generic
-from django.db import connection
-from django.http import HttpResponseRedirect
+from django.views.generic import CreateView
 
-from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta, Usuario
-from baratico.models import Producto, Resenna, Factura
+from baratico import form
+from baratico.form import RegistroForm
+from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta, Usuario,Factura
+
+
+class RegistrarUsuario(CreateView):
+    model = User
+    template_name = 'baratico/registerUser.html'
+    form_class = RegistroForm
+
+    def post(self, request):
+        try:
+            username=User.objects.get(username=request.POST.get('username'))
+            print('Ya hay un usuario con esea mierda')
+            return render(request, 'baratico/registerUser.html', {})
+        except:
+            user=User.objects.create_user(request.POST.get('username'),request.POST.get('email'),
+                                          request.POST.get('password'))
+            user.email=request.POST.get('email')
+            user.is_active=True
+            user.is_staff=False
+            user.save()
+            nuevoUsuario=Usuario(direccion=request.POST.get('direccion'),nombre_usuario=user)
+            nuevoUsuario.save()
+            print ('se ha registrado ese usuario')
+            return render(request, 'baratico/login.html', {})
 
 
 class DetalleProducto(generic.DetailView):
@@ -19,7 +45,6 @@ class DetalleFactura(generic.DetailView):
     template_name = 'baratico/lineasFactura.html'
 
 
-
 class ResultadosBusquedaList(generic.ListView):
     model = Producto
     paginate_by = 10
@@ -27,7 +52,6 @@ class ResultadosBusquedaList(generic.ListView):
 
     def get_queryset(self):
         qs = Producto.objects.all()
-
         keywords = self.request.GET.get('barraBusqueda')
         if keywords:
             consulta = SearchQuery(keywords)
@@ -37,8 +61,6 @@ class ResultadosBusquedaList(generic.ListView):
 
         return qs
 
-
-
 class ComprasList(generic.ListView):
     model = Factura
     paginate_by = 10
@@ -46,14 +68,13 @@ class ComprasList(generic.ListView):
 
     def get_queryset(self):
         qs = Factura.objects.all()
-
         keywords = self.request.GET.get(self.request.user)
+
         if keywords:
             consulta = SearchQuery(keywords)
             vector = SearchVector('fecha', 'usuario')
             qs = qs.annotate(search=vector).filter(search=consulta)
             qs = qs.annotate(rank=SearchRank(vector, consulta)).order_by('-rank')
-
         return qs
 
 
@@ -69,17 +90,17 @@ class CarritoList(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(CarritoList, self).get_context_data(**kwargs)
         usuario_actual = self.request.user
+        context['carrito_producto_list'] = CarritoProducto.objects.filter(usuario=usuario_actual)
+        context['carrito_oferta_list'] = CarritoOferta.objects.filter(usuario=usuario_actual)
         cp = CarritoProducto.objects.filter(usuario=usuario_actual)
         co = CarritoOferta.objects.filter(usuario=usuario_actual)
         total = Usuario.objects.get(nombre_usuario=usuario_actual).get_total_productos()
         context['carrito_producto_list'] = cp
         context['carrito_oferta_list'] = co
-        context['total'] = total
+        #context['total'] = total
         return context
 
 
-def login(request):
-    return render(request, 'baratico/chat.html', {})
 
 
 def CalificarProducto(request,id_producto):
@@ -97,8 +118,6 @@ def CalificarProducto(request,id_producto):
             resena_obj.comentario=comentario
             resena_obj.calificacion=calificacion
             resena_obj.save()
-
-
     return render(request,'baratico/inicio.html',{})
 
 
@@ -118,7 +137,6 @@ def agregar_producto_carrito(request, id_producto):
         print("CarritoProducto agregado")
 
     return render(request, 'baratico/inicio.html', {})
-
 
 def eliminar_producto_carrito(request, id_producto):
     usuario_actual = request.user

@@ -55,7 +55,6 @@ class UsuarioInLine(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = (UsuarioInLine,)
 
-
 class LineaFacturaProductoInLine(admin.TabularInline):
     model = LineaFacturaProducto
 
