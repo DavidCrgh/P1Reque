@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="{% static 'baratico/inicio.css' %}" type="text/css"> </head>
 
 <body>
+
   <nav class="navbar navbar-expand-md navbar-dark bg-primary">
     <div class="container">
       <a class="navbar-brand" href="{% url 'baratico:redirect-inicio' %}">Inicio
@@ -17,7 +18,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="#">Productos
+            <a class="nav-link" href="{% url 'baratico:productos' %}">Productos
               <br> </a>
           </li>
           <li class="nav-item">
@@ -31,6 +32,10 @@
             <a class="nav-link" href="#"><i class="fa fa-user fa-fw d-inline-block pull-right"></i>Chat
               <br> </a>
           </li>
+            <li class="nav-item">
+                <a class="nav-link" href={% url 'login' %}>Salir
+                  <br> </a>
+            </li>
         </ul>
         <form class="form-inline m-0" action="{% url 'baratico:resultados-busqueda' %}" method="get">
             {% csrf_token %}
@@ -66,7 +71,7 @@
                             <li class="m-0 p-2">Cantidad:&nbsp;<br>
                             </li>
                             {% csrf_token %}
-                            <input name="cantidadCarrito" class="form-control mr-2 w-25" placeholder="1" min="1" type="number" max="{{ producto.cantidad }}">
+                            <input name="cantidadCarrito" class="form-control mr-2 w-25" value="1" placeholder="1" min="1" type="number" max="{{ producto.cantidad }}">
                             <button class="btn btn-secondary border align-items-center btn-sm my-2 text-center" type="submit">Añadir al carrito&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;<br>
                             </button>
                         </ul>
@@ -103,7 +108,7 @@
                           </h5>
                       </div>
                       <div class="col-md-4">
-                          <input class="form-control mr-2" min="1" type="number" max="10" name="puntuacion">
+                          <input class="form-control mr-2" min="1" value="10" type="number" max="10" name="puntuacion">
                       </div>
                       <div class="col-md-4">
                          <button class="btn btn-secondary border align-items-center btn-sm my-2 text-center" type="submit">Comentar&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;

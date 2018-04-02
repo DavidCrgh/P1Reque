@@ -1,6 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.forms import forms
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.datetime_safe import datetime
@@ -71,14 +73,29 @@ class ComprasList(generic.ListView):
         return qs
 
 
+class ProductosList(generic.ListView):
+    model =  Producto
+    paginate_by = 10
+    template_name = 'baratico/productosList.html'
+
+    def get_queryset(self):
+        qs=Producto.objects.all()
+        return  qs
+
+
+
+
 class CarritoList(generic.ListView):
     template_name = 'baratico/carrito.html'
     # context_object_name = 'carrito_producto_list'
 
 
     def get_queryset(self):
-        usuario_actual = self.request.user
-        return CarritoProducto.objects.filter(usuario=usuario_actual)
+        try:
+            usuario_actual = self.request.user
+            return CarritoProducto.objects.filter(usuario=usuario_actual)
+        except:
+            return
 
     def get_context_data(self, **kwargs):
         context = super(CarritoList, self).get_context_data(**kwargs)
@@ -97,6 +114,7 @@ class CarritoList(generic.ListView):
 
 
 def CalificarProducto(request,id_producto):
+
     if request.method=='POST':
         pUsuario=request.user
         producto=Producto.objects.get(pk=id_producto)
@@ -107,35 +125,38 @@ def CalificarProducto(request,id_producto):
         try:
             resena_obj.save()
         except:
-            resena_obj=Resenna.objects.get(usuario=pUsuario,producto=producto)
-            resena_obj.comentario=comentario
-            resena_obj.calificacion=calificacion
-            resena_obj.save()
-    return render(request,'baratico/inicio.html',{})
+            if comentario !='':
+                resena_obj=Resenna.objects.get(usuario=pUsuario,producto=producto)
+                resena_obj.comentario=comentario
+                resena_obj.calificacion=calificacion
+                resena_obj.save()
 
-
-
-
+    return redirect('baratico:detalle_producto',pk=id_producto)
 
 def inicio(request):
     return render(request, 'baratico/inicio.html', {})
 
 
 def agregar_producto_carrito(request, id_producto):
-    if request.user.is_authenticated:
-        cantidad = request.POST.get('cantidadCarrito')
-        producto = Producto.objects.get(pk=id_producto)
-        usuario_actual = request.user
-        cp = CarritoProducto(cantidad=cantidad, producto=producto, usuario=usuario_actual)
-        cp.save()
-        print("Cantidad: ", cantidad)
-        print("Producto: ", producto.nombre)
-        print("Usuario: ", usuario_actual.username)
-        print("CarritoProducto agregado")
-
-    return render(request, 'baratico/inicio.html', {})
+    try:
+        if request.user.is_authenticated:
+            cantidad = request.POST.get('cantidadCarrito')
+            producto = Producto.objects.get(pk=id_producto)
+            usuario_actual = request.user
+            cp = CarritoProducto(cantidad=cantidad, producto=producto, usuario=usuario_actual)
+            cp.save()
+            print("Cantidad: ", cantidad)
+            print("Producto: ", producto.nombre)
+            print("Usuario: ", usuario_actual.username)
+            print("CarritoProducto agregado")
+            return redirect('baratico:detalle_producto', pk=id_producto)
+    except Exception as e:
+        producto=CarritoProducto.objects.get(usuario=usuario_actual,producto=producto)
+        producto.cantidad=request.POST.get('cantidadCarrito')
+        producto.save()
+        return redirect('baratico:detalle_producto',pk=id_producto)
 
 def eliminar_producto_carrito(request, id_producto):
     usuario_actual = request.user
     CarritoProducto.objects.filter(usuario=usuario_actual, producto=id_producto).delete()
-    return render(request, 'baratico/inicio.html', {})
+    return redirect('baratico:ver_carrito')

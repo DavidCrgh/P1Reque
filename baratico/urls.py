@@ -11,6 +11,7 @@ urlpatterns = [
     path('redirect_inicio/', views.inicio, name='redirect-inicio'),
     path('resultados/', views.ResultadosBusquedaList.as_view(), name='resultados-busqueda'),
     path('compras/', views.ComprasList.as_view(), name='comprasResultado'),
+    path('productos/', views.ProductosList.as_view(), name='productos'),
     path('<int:id_producto>/comentar', views.CalificarProducto, name='comentario'),
     path('<int:pk>/', views.DetalleProducto.as_view(), name='detalle_producto'),
     path('<int:pk>/lineasfaturas', views.DetalleFactura.as_view(), name='detalleFactura'),
