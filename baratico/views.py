@@ -124,6 +124,10 @@ def CalificarProducto(request,id_producto):
 
 
 
+def inicio(request):
+    return render(request, 'baratico/inicio.html', {})
+
+
 def agregar_producto_carrito(request, id_producto):
     if request.user.is_authenticated:
         cantidad = request.POST.get('cantidadCarrito')

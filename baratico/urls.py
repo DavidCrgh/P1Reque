@@ -8,6 +8,7 @@ from . import views
 app_name = 'baratico'
 urlpatterns = [
     url(r'^registrar/',RegistrarUsuario.as_view(),name='registrar'),
+    path('redirect_inicio/', views.inicio, name='redirect-inicio'),
     path('resultados/', views.ResultadosBusquedaList.as_view(), name='resultados-busqueda'),
     path('compras/', views.ComprasList.as_view(), name='comprasResultado'),
     path('<int:id_producto>/comentar', views.CalificarProducto, name='comentario'),
