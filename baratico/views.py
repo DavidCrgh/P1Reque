@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.utils.datetime_safe import datetime
 from django.views import generic
 from django.views.generic import CreateView
+from django.shortcuts import redirect
 
 from baratico import form
 from baratico.form import RegistroForm
@@ -20,7 +21,6 @@ class RegistrarUsuario(CreateView):
     def post(self, request):
         try:
             username=User.objects.get(username=request.POST.get('username'))
-            print('Ya hay un usuario con esea mierda')
             return render(request, 'baratico/registerUser.html', {})
         except:
             user=User.objects.create_user(request.POST.get('username'),request.POST.get('email'),
@@ -31,8 +31,7 @@ class RegistrarUsuario(CreateView):
             user.save()
             nuevoUsuario=Usuario(direccion=request.POST.get('direccion'),nombre_usuario=user)
             nuevoUsuario.save()
-            print ('se ha registrado ese usuario')
-            return render(request, 'baratico/login.html', {})
+            return redirect('/')
 
 
 class DetalleProducto(generic.DetailView):
@@ -97,7 +96,7 @@ class CarritoList(generic.ListView):
         total = Usuario.objects.get(nombre_usuario=usuario_actual).get_total_productos()
         context['carrito_producto_list'] = cp
         context['carrito_oferta_list'] = co
-        #context['total'] = total
+        context['total'] = total
         return context
 
 
