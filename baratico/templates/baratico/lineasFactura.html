@@ -11,7 +11,7 @@
 <body>
   <nav class="navbar navbar-expand-md navbar-dark bg-primary">
     <div class="container">
-      <a class="navbar-brand" href="#">Inicio
+      <a class="navbar-brand" href="{% url 'baratico:redirect-inicio' %}">Inicio
         <br> </a>
       <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -123,8 +123,6 @@
         <div class="col-md-12 p-0">
           <p class="lead">Cantidad de productos: &nbsp;</p>
           <p class="lead">Total a pagar:&nbsp;</p>
-          <a class="btn btn-secondary" href="#">PAGAR CARRITO
-            <br> </a>
         </div>
       </div>
     </div>

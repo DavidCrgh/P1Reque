@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.datetime_safe import datetime
 from django.views import generic
@@ -21,6 +21,7 @@ class RegistrarUsuario(CreateView):
     def post(self, request):
         try:
             username=User.objects.get(username=request.POST.get('username'))
+            print('Ya hay un usuario con esea mierda')
             return render(request, 'baratico/registerUser.html', {})
         except:
             user=User.objects.create_user(request.POST.get('username'),request.POST.get('email'),
@@ -31,7 +32,7 @@ class RegistrarUsuario(CreateView):
             user.save()
             nuevoUsuario=Usuario(direccion=request.POST.get('direccion'),nombre_usuario=user)
             nuevoUsuario.save()
-            return redirect('/')
+            redirect('inicio')
 
 
 class DetalleProducto(generic.DetailView):
@@ -66,14 +67,7 @@ class ComprasList(generic.ListView):
     template_name = 'baratico/compras.html'  # TODO crear html para resultados de busqueda
 
     def get_queryset(self):
-        qs = Factura.objects.all()
-        keywords = self.request.GET.get(self.request.user)
-
-        if keywords:
-            consulta = SearchQuery(keywords)
-            vector = SearchVector('fecha', 'usuario')
-            qs = qs.annotate(search=vector).filter(search=consulta)
-            qs = qs.annotate(rank=SearchRank(vector, consulta)).order_by('-rank')
+        qs = Factura.objects.filter(usuario=self.request.user)
         return qs
 
 
