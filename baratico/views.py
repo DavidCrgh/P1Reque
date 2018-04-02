@@ -55,6 +55,10 @@ def login(request):
     return render(request, 'baratico/login.html', {})
 
 
+def inicio(request):
+    return render(request, 'baratico/inicio.html', {})
+
+
 def agregar_producto_carrito(request, id_producto):
     if request.user.is_authenticated:
         cantidad = request.POST.get('cantidadCarrito')
