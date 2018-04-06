@@ -9,10 +9,11 @@ from django.utils.datetime_safe import datetime
 from django.views import generic
 from django.views.generic import CreateView
 from django.shortcuts import redirect
+from django.utils import timezone
 
 from baratico import form
 from baratico.form import RegistroForm
-from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta, Usuario,Factura
+from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta, Usuario, Factura, LineaFacturaProducto
 
 
 class RegistrarUsuario(CreateView):
@@ -66,7 +67,7 @@ class ResultadosBusquedaList(generic.ListView):
 class ComprasList(generic.ListView):
     model = Factura
     paginate_by = 10
-    template_name = 'baratico/compras.html'  # TODO crear html para resultados de busqueda
+    template_name = 'baratico/compras.html'
 
     def get_queryset(self):
         qs = Factura.objects.filter(usuario=self.request.user)
@@ -80,8 +81,7 @@ class ProductosList(generic.ListView):
 
     def get_queryset(self):
         qs=Producto.objects.all()
-        return  qs
-
+        return qs
 
 
 
@@ -111,27 +111,25 @@ class CarritoList(generic.ListView):
         return context
 
 
-
-
-def CalificarProducto(request,id_producto):
-
-    if request.method=='POST':
-        pUsuario=request.user
-        producto=Producto.objects.get(pk=id_producto)
-        calificacion= request.POST.get('puntuacion')
-        comentario=request.POST.get('comentario')
-        fecha= datetime.now()
-        resena_obj=Resenna(usuario=pUsuario,producto=producto,calificacion=calificacion,comentario=comentario,fecha=fecha)
+def calificar_producto(request,id_producto):
+    if request.method == 'POST':
+        pUsuario = request.user
+        producto = Producto.objects.get(pk=id_producto)
+        calificacion = request.POST.get('puntuacion')
+        comentario = request.POST.get('comentario')
+        fecha = datetime.now()
+        resena_obj = Resenna(usuario=pUsuario,producto=producto,calificacion=calificacion,comentario=comentario,fecha=fecha)
         try:
             resena_obj.save()
         except:
-            if comentario !='':
+            if comentario != '':
                 resena_obj=Resenna.objects.get(usuario=pUsuario,producto=producto)
                 resena_obj.comentario=comentario
                 resena_obj.calificacion=calificacion
                 resena_obj.save()
 
     return redirect('baratico:detalle_producto',pk=id_producto)
+
 
 def inicio(request):
     return render(request, 'baratico/inicio.html', {})
@@ -151,12 +149,30 @@ def agregar_producto_carrito(request, id_producto):
             print("CarritoProducto agregado")
             return redirect('baratico:detalle_producto', pk=id_producto)
     except Exception as e:
-        producto=CarritoProducto.objects.get(usuario=usuario_actual,producto=producto)
+        producto=CarritoProducto.objects.get(usuario=usuario_actual, producto=producto)
         producto.cantidad=request.POST.get('cantidadCarrito')
         producto.save()
         return redirect('baratico:detalle_producto',pk=id_producto)
+
 
 def eliminar_producto_carrito(request, id_producto):
     usuario_actual = request.user
     CarritoProducto.objects.filter(usuario=usuario_actual, producto=id_producto).delete()
     return redirect('baratico:ver_carrito')
+
+
+def pagar_carrito(request):
+    usuario = request.user
+    qs_lineas_producto = CarritoProducto.objects.filter(usuario=usuario)
+
+    if qs_lineas_producto:
+        factura = Factura(fecha=timezone.now(), usuario=usuario)
+        factura.save()
+        for linea_producto_carrito in qs_lineas_producto:
+            factura.lineafacturaproducto_set.create(
+                cantidad=linea_producto_carrito.cantidad,
+                precio=linea_producto_carrito.producto.precio,
+                producto=linea_producto_carrito.producto
+            )
+        CarritoProducto.objects.filter(usuario=usuario).delete()
+    return redirect('baratico:redirect-inicio')
