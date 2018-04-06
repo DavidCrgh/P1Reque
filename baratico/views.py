@@ -13,7 +13,7 @@ from django.utils import timezone
 
 from baratico import form
 from baratico.form import RegistroForm
-from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta, Usuario, Factura, LineaFacturaProducto
+from baratico.models import Producto, Resenna, CarritoProducto, CarritoOferta, Usuario, Factura, Categoria
 
 
 class RegistrarUsuario(CreateView):
@@ -52,7 +52,6 @@ class DetalleFactura(generic.DetailView):
 
 class ResultadosBusquedaList(generic.ListView):
     model = Producto
-    paginate_by = 10
     template_name = 'baratico/resultadosBusqueda.html'
 
     def get_queryset(self):
@@ -69,7 +68,6 @@ class ResultadosBusquedaList(generic.ListView):
 
 class ComprasList(generic.ListView):
     model = Factura
-    paginate_by = 10
     template_name = 'baratico/compras.html'
 
     def get_queryset(self):
@@ -79,11 +77,14 @@ class ComprasList(generic.ListView):
 
 class ProductosList(generic.ListView):
     model = Producto
-    paginate_by = 10
     template_name = 'baratico/productosList.html'
 
     def get_queryset(self):
-        qs=Producto.objects.all()
+        idCategoria = self.kwargs['idCategoria']
+        if idCategoria == 0:
+            qs = Producto.objects.all()
+        else:
+            qs = Producto.objects.filter(categoria__id=idCategoria)
         return qs
 
 
@@ -101,8 +102,8 @@ class CarritoList(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(CarritoList, self).get_context_data(**kwargs)
         usuario_actual = self.request.user
-        context['carrito_producto_list'] = CarritoProducto.objects.filter(usuario=usuario_actual)
-        context['carrito_oferta_list'] = CarritoOferta.objects.filter(usuario=usuario_actual)
+        # context['carrito_producto_list'] = CarritoProducto.objects.filter(usuario=usuario_actual)
+        # context['carrito_oferta_list'] = CarritoOferta.objects.filter(usuario=usuario_actual)
         cp = CarritoProducto.objects.filter(usuario=usuario_actual)
         co = CarritoOferta.objects.filter(usuario=usuario_actual)
         total = Usuario.objects.get(nombre_usuario=usuario_actual).get_total_productos()
@@ -110,6 +111,14 @@ class CarritoList(generic.ListView):
         context['carrito_oferta_list'] = co
         context['total'] = total
         return context
+
+
+class CategoriaList(generic.ListView):
+    model = Categoria
+    template_name = 'baratico/categorias.html'
+
+    def get_queryset(self):
+        return Categoria.objects.all().order_by('supercategoria')
 
 
 def calificar_producto(request,id_producto):

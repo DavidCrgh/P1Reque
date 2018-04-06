@@ -7,6 +7,8 @@ from .models import Categoria, Oferta, Producto, Resenna, ProductoOferta, Factur
 
 # Register your models here.
 
+admin.site.site_header = 'Administración de Sistema El Baratico'
+
 
 class CategoriaAdmin(admin.ModelAdmin):
     list_display = ['id', 'nombre', 'supercategoria']
@@ -41,9 +43,9 @@ class ProductoAdmin(admin.ModelAdmin):
 
 class ResennaAdmin(admin.ModelAdmin):
     actions = None
-    list_display = ['usuario','comentario','calificacion','fecha']
-    fields = ['usuario','calificacion','comentario']
-    readonly_fields = ['usuario','calificacion']
+    list_display = ['usuario', 'comentario', 'calificacion', 'fecha']
+    fields = ['usuario', 'calificacion', 'comentario']
+    readonly_fields = ['usuario', 'calificacion']
 
 
 class UsuarioInLine(admin.StackedInline):
@@ -55,16 +57,21 @@ class UsuarioInLine(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = (UsuarioInLine,)
 
+
 class LineaFacturaProductoInLine(admin.TabularInline):
     model = LineaFacturaProducto
+    readonly_fields = ['cantidad', 'precio', ]
 
 
 class LineaFacturaOfertaInLine(admin.TabularInline):
     model = LineaFacturaOferta
+    readonly_fields = ['cantidad', 'precio',]
 
 
 class FacturaAdmin(admin.ModelAdmin):
+    list_display = ['usuario', 'fecha']
     inlines = [LineaFacturaProductoInLine, LineaFacturaOfertaInLine]
+    readonly_fields = ['usuario']
 
 
 admin.site.register(Categoria, CategoriaAdmin)
@@ -72,5 +79,5 @@ admin.site.register(Producto, ProductoAdmin)
 admin.site.register(Oferta, OfertaAdmin)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-admin.site.register(Resenna,ResennaAdmin)
+admin.site.register(Resenna, ResennaAdmin)
 admin.site.register(Factura, FacturaAdmin)

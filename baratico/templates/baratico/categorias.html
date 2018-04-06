@@ -17,7 +17,7 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'baratico:productos' 0 %}">Productos
+            <a class="nav-link" href="{% url 'baratico:productos'  0 %}">Productos
               <br> </a>
           </li>
           <li class="nav-item">
@@ -50,38 +50,22 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h1 class="">Lista de productos</h1>
+          <h1 class="">Categorias de Productos</h1>
         </div>
       </div>
     </div>
   </div>
-  {% for producto in object_list %}
-      <div class="py-2" style="border:0.3px grey">
-          <div class="container">
-              <div class="row">
-                  <div class="col-md-2">
-                      <img src = "/media/{{ producto.imagen }}" class="img-fluid d-block bg-light mx-auto img-thumbnail"> </div>
-                  <div class="col-md-9">
-                      <div class="card">
-                          <div class="card-header"><a href="{% url 'baratico:detalle_producto' producto.id %}"> {{ producto.nombre }} </a>  </div>
-                          <div class="card-body">
-                              <h5>Descripción: {{ producto.descripcion}}</h5>
-                              <h5>Precio: ₡ {{ producto.precio }} </h5>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
+  <ul>
+  {% for categoria in object_list %}
+      {% if categoria.supercategoria %}
+      <li><a href="{% url 'baratico:productos' categoria.id %}"> [{{ categoria.supercategoria.nombre }}]  {{ categoria.nombre }}</a></li>
+      {% else %}
+      <li><a href="{% url 'baratico:productos' categoria.id %}"> {{ categoria.nombre }} </a></li>
+      {% endif %}
   {% empty %}
-      <div class="py-5" style="border:0.3px grey">
-          <div class="container">
-              <div class="row">
-                  <h3>No se encontraron productos.</h3>
-              </div>
-          </div>
-      </div>
+      <h3>No hay categorias en el sistema.</h3>
   {% endfor %}
+  </ul>
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
