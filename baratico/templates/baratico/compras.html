@@ -50,7 +50,7 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <h1 class="">Resultados de Busqueda</h1>
+          <h1 class="">Historial de Compras</h1>
         </div>
       </div>
     </div>
@@ -63,7 +63,7 @@
                       <img src="{% static 'images/factura.png' %}" class="img-fluid d-block bg-secondary mx-1 img-thumbnail"> </div>
                   <div class="col-md-6">
                       <div class="card">
-                          <div class="card-header"><a href="{% url 'baratico:detalleFactura' factura.id %}"> Número de factura: {{ factura.id }} </a>  </div>
+                          <div class="card-header"><a href="{% url 'baratico:detalleFactura' factura.id %}"> Identificador de factura: {{ factura.id }} </a>  </div>
                           <div class="card-body">
                               <p> Fecha de la factura: {{ factura.fecha }} </p>
                           </div>
@@ -76,7 +76,7 @@
       <div class="py-5" style="border:0.3px grey">
           <div class="container">
               <div class="row">
-                  <h3> No tiene compras realizadas </h3>
+                  <h3> No tiene compras realizadas. </h3>
               </div>
           </div>
       </div>

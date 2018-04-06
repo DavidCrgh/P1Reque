@@ -23,17 +23,19 @@ class RegistrarUsuario(CreateView):
 
     def post(self, request):
         try:
-            username=User.objects.get(username=request.POST.get('username'))
-            print('Ya hay un usuario con esea mierda')
+            username = User.objects.get(username=request.POST.get('username'))
             return render(request, 'baratico/registerUser.html', {})
         except:
-            user=User.objects.create_user(request.POST.get('username'),request.POST.get('email'),
-                                          request.POST.get('password'))
-            user.email=request.POST.get('email')
-            user.is_active=True
-            user.is_staff=False
+            user = User.objects.create_user(
+                request.POST.get('username'),
+                request.POST.get('email'),
+                request.POST.get('password')
+            )
+            user.email = request.POST.get('email')
+            user.is_active = True
+            user.is_staff = False
             user.save()
-            nuevoUsuario=Usuario(direccion=request.POST.get('direccion'),nombre_usuario=user)
+            nuevoUsuario = Usuario(direccion=request.POST.get('direccion'), nombre_usuario=user)
             nuevoUsuario.save()
             redirect('inicio')
 
@@ -51,7 +53,7 @@ class DetalleFactura(generic.DetailView):
 class ResultadosBusquedaList(generic.ListView):
     model = Producto
     paginate_by = 10
-    template_name = 'baratico/resultadosBusqueda.html'  # TODO crear html para resultados de busqueda
+    template_name = 'baratico/resultadosBusqueda.html'
 
     def get_queryset(self):
         qs = Producto.objects.all()
@@ -64,18 +66,19 @@ class ResultadosBusquedaList(generic.ListView):
 
         return qs
 
+
 class ComprasList(generic.ListView):
     model = Factura
     paginate_by = 10
     template_name = 'baratico/compras.html'
 
     def get_queryset(self):
-        qs = Factura.objects.filter(usuario=self.request.user)
+        qs = Factura.objects.filter(usuario=self.request.user).order_by('-fecha')
         return qs
 
 
 class ProductosList(generic.ListView):
-    model =  Producto
+    model = Producto
     paginate_by = 10
     template_name = 'baratico/productosList.html'
 
@@ -84,11 +87,9 @@ class ProductosList(generic.ListView):
         return qs
 
 
-
 class CarritoList(generic.ListView):
     template_name = 'baratico/carrito.html'
     # context_object_name = 'carrito_producto_list'
-
 
     def get_queryset(self):
         try:
@@ -118,14 +119,14 @@ def calificar_producto(request,id_producto):
         calificacion = request.POST.get('puntuacion')
         comentario = request.POST.get('comentario')
         fecha = datetime.now()
-        resena_obj = Resenna(usuario=pUsuario,producto=producto,calificacion=calificacion,comentario=comentario,fecha=fecha)
+        resena_obj = Resenna(usuario=pUsuario, producto=producto, calificacion=calificacion, comentario=comentario, fecha=fecha)
         try:
             resena_obj.save()
         except:
             if comentario != '':
-                resena_obj=Resenna.objects.get(usuario=pUsuario,producto=producto)
-                resena_obj.comentario=comentario
-                resena_obj.calificacion=calificacion
+                resena_obj = Resenna.objects.get(usuario=pUsuario,producto=producto)
+                resena_obj.comentario = comentario
+                resena_obj.calificacion = calificacion
                 resena_obj.save()
 
     return redirect('baratico:detalle_producto',pk=id_producto)
@@ -149,6 +150,8 @@ def agregar_producto_carrito(request, id_producto):
             print("CarritoProducto agregado")
             return redirect('baratico:detalle_producto', pk=id_producto)
     except Exception as e:
+        usuario_actual = request.user
+        producto = Producto.objects.get(pk=id_producto)
         producto=CarritoProducto.objects.get(usuario=usuario_actual, producto=producto)
         producto.cantidad=request.POST.get('cantidadCarrito')
         producto.save()

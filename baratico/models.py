@@ -37,6 +37,24 @@ class Factura(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)  # auto_now_add: Guarda la fecha actual automaticamente
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def calcular_total(self):
+        id_factura = self.id
+        stringsql = ''' SELECT SUM(l.cantidad * p.precio)
+                        FROM baratico_lineafacturaproducto l
+                          INNER JOIN baratico_producto p ON l.producto_id = p.id
+                        WHERE l.factura_id = %s
+         '''
+
+        cursor = connection.cursor()
+        cursor.execute(stringsql, [id_factura])
+
+        row = cursor.fetchone()
+
+        if row[0]:
+            return row[0].real
+        else:
+            return 0
+
 
 class LineaFacturaOferta(models.Model):
     factura = models.ForeignKey(Factura, on_delete=models.CASCADE)
@@ -106,7 +124,7 @@ class Producto(models.Model):
                        SELECT sum(lfp.cantidad) AS c
                        FROM baratico_producto p 
                            INNER JOIN baratico_lineafacturaproducto lfp ON (p.id = lfp.producto_id)
-                       WHERE p.id = %s -- id de coca cola es 5
+                       WHERE p.id = %s
                        )
                        UNION
                        (
