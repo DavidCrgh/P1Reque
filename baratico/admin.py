@@ -60,18 +60,22 @@ class UserAdmin(BaseUserAdmin):
 
 class LineaFacturaProductoInLine(admin.TabularInline):
     model = LineaFacturaProducto
-    readonly_fields = ['cantidad', 'precio', ]
+    readonly_fields = ['producto', 'cantidad', 'precio', ]
+    extra = 0
 
 
 class LineaFacturaOfertaInLine(admin.TabularInline):
     model = LineaFacturaOferta
-    readonly_fields = ['cantidad', 'precio',]
+    readonly_fields = ['oferta', 'cantidad', 'precio', ]
+    extra = 0
 
 
 class FacturaAdmin(admin.ModelAdmin):
     list_display = ['usuario', 'fecha']
     inlines = [LineaFacturaProductoInLine, LineaFacturaOfertaInLine]
     readonly_fields = ['usuario']
+    search_fields = ['usuario__username']
+    ordering = ['usuario']
 
 
 admin.site.register(Categoria, CategoriaAdmin)

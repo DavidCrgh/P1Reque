@@ -65,6 +65,9 @@ class LineaFacturaOferta(models.Model):
     class Meta:  # Metadatos sobre el modelo. En este caso se usan para hacer un unique key de varias columnas
         unique_together = (('factura', 'oferta'),)
 
+    def __str__(self):
+        return 'ID: ' + self.factura.id.__str__() + self.oferta.id.__str__() + self.id.__str__()
+
 
 class LineaFacturaProducto(models.Model):
     factura = models.ForeignKey(Factura, on_delete=models.CASCADE)
@@ -74,6 +77,9 @@ class LineaFacturaProducto(models.Model):
 
     class Meta:  # Metadatos sobre el modelo. En este caso se usan para hacer un unique key de varias columnas
         unique_together = (('factura', 'producto'),)
+
+    def __str__(self):
+        return 'ID:' + self.factura.id.__str__() + self.id.__str__()
 
 
 class Oferta(models.Model):
